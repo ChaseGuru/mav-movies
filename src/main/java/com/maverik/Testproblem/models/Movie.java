@@ -7,6 +7,15 @@ import jakarta.persistence.Id;
 public class Movie {
     @Id
     private String imdbID;
+
+    public String getImdbID() {
+        return imdbID;
+    }
+
+    public void setImdbID(String imdbID) {
+        this.imdbID = imdbID;
+    }
+
     private String title;
 
     public String getTitle() {

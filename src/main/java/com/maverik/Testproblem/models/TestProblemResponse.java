@@ -1,5 +1,5 @@
 package com.maverik.Testproblem.models;
 
-public record TestProblemResponse<T>(boolean success, String error, ErrorCode errorCode, T data) {
+public record TestProblemResponse<T>(String error, ErrorCode errorCode, T data) {
 
 }

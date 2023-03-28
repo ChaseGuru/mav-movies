@@ -10,8 +10,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.RequestEntity;
+import org.springframework.http.ResponseEntity;
 
 import com.maverik.Testproblem.models.Movie;
 import com.maverik.Testproblem.models.TestProblemResponse;
@@ -26,31 +28,33 @@ public class MovieRequestTest {
 
     @Test
     public void movieFetchAndSaveShouldReturnFoundMovie() throws Exception {
-        // TODO: put maverik movie requests in service so that we can "mock" responses
-        ParameterizedTypeReference<TestProblemResponse<Movie>> responseType = new ParameterizedTypeReference<>() {
+        // TODO: Mock requests from maverik movie service
+        ParameterizedTypeReference<TestProblemResponse<Movie>> responseType = new ParameterizedTypeReference<TestProblemResponse<Movie>>() {
         };
-        RequestEntity<Void> request = RequestEntity.get("http://localhost:" + port + "/movies?title=John")
+
+        RequestEntity<Void> request = RequestEntity.get("http://localhost:" + port + "/fetch-movie?title=John")
                 .accept(MediaType.APPLICATION_JSON).build();
 
-        TestProblemResponse<Movie> response = restTemplate.exchange(request, responseType)
-                .getBody();
+        ResponseEntity<TestProblemResponse<Movie>> response = restTemplate.exchange(request, responseType);
 
         assertNotNull(response);
-        assertThat(response.success());
-        assertNotNull(response.data());
+        assertThat(response.getStatusCode() == HttpStatus.OK);
+        TestProblemResponse<Movie> body = response.getBody();
 
-        Movie movie = response.data();
-        assertThat(movie.getTitle()).contains("John Wick");
+        assertNotNull(body);
+        assertThat(body.data().getTitle().contains("John Wick"));
 
-        request = RequestEntity.get("http://localhost:" + port + "/movies/tt2911666")
+        request = RequestEntity.get("http://localhost:" + port + "/movies/" + body.data()
+                .getImdbID())
                 .accept(MediaType.APPLICATION_JSON).build();
 
-        response = restTemplate.exchange(request, responseType)
-                .getBody();
+        ResponseEntity<Movie> savedMovie = restTemplate.exchange(request, new ParameterizedTypeReference<Movie>() {
+        });
 
-        assertNotNull(response);
-        assertThat(response.success());
-        assertNotNull(response.data());
+        assertThat(savedMovie.getStatusCode() == HttpStatus.OK);
+        Movie singleBody = savedMovie.getBody();
+        assertNotNull(singleBody);
+        assertThat(singleBody.getTitle().contains("John Wick"));
     }
 
     // TODO: Test other response types of method
