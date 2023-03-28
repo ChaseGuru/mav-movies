@@ -16,7 +16,7 @@ import com.maverik.Testproblem.models.TestProblemResponse;
 @RestController
 public class MovieController {
     @GetMapping("/movie")
-    public TestProblemResponse fetchMovie(@RequestParam(value = "title") String title) {
+    public TestProblemResponse<Movie> fetchMovie(@RequestParam(value = "title") String title) {
         String url = "https://gateway.maverik.com/movie/api/movie/title/";
 
         URI uri = UriComponentsBuilder.fromUriString(url)
@@ -32,14 +32,14 @@ public class MovieController {
             Movie[] movies = restTemplate.getForObject(uri, Movie[].class);
 
             if (movies == null || movies.length == 0) {
-                return new TestProblemResponse(
+                return new TestProblemResponse<Movie>(
                         false,
                         "No Movie Found",
                         ErrorCode.NO_MOVIE_FOUND,
                         null);
             }
 
-            return new TestProblemResponse(
+            return new TestProblemResponse<Movie>(
                     true,
                     null,
                     null,
@@ -48,7 +48,7 @@ public class MovieController {
         } catch (RestClientException e) {
             // TODO: Log, since it may indicate downtime of related service
 
-            return new TestProblemResponse(
+            return new TestProblemResponse<Movie>(
                     false,
                     "Failed to fetch movie",
                     ErrorCode.MAVERIK_REQUEST_FAILED,
