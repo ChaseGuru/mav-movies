@@ -13,7 +13,7 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.MediaType;
 import org.springframework.http.RequestEntity;
 
-import com.maverik.Testproblem.models.Movie;
+import com.maverik.Testproblem.models.MaverikMovie;
 import com.maverik.Testproblem.models.TestProblemResponse;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
@@ -27,19 +27,19 @@ public class MovieRequestTest {
     @Test
     public void movieFetchAndSaveShouldReturnFoundMovie() throws Exception {
         // TODO: put maverik movie requests in service so that we can "mock" responses
-        ParameterizedTypeReference<TestProblemResponse<Movie>> responseType = new ParameterizedTypeReference<>() {
+        ParameterizedTypeReference<TestProblemResponse<MaverikMovie>> responseType = new ParameterizedTypeReference<>() {
         };
-        RequestEntity<Void> request = RequestEntity.get("http://localhost:" + port + "/movie?title=John")
+        RequestEntity<Void> request = RequestEntity.get("http://localhost:" + port + "/movies?title=John")
                 .accept(MediaType.APPLICATION_JSON).build();
 
-        TestProblemResponse<Movie> response = restTemplate.exchange(request, responseType)
+        TestProblemResponse<MaverikMovie> response = restTemplate.exchange(request, responseType)
                 .getBody();
 
         assertNotNull(response);
         assertThat(response.success());
         assertNotNull(response.data());
 
-        Movie movie = response.data();
+        MaverikMovie movie = response.data();
         assertThat(movie.title()).contains("John Wick");
     }
 

@@ -10,15 +10,19 @@ import org.springframework.web.client.RestClientException;
 
 import com.maverik.Testproblem.models.ErrorCode;
 import com.maverik.Testproblem.models.MaverikMovie;
+import com.maverik.Testproblem.models.Movie;
 import com.maverik.Testproblem.models.TestProblemResponse;
+import com.maverik.Testproblem.repositories.MovieRepository;
 import com.maverik.Testproblem.services.MaverikMovieService;
 
 @RestController
 public class MovieController {
     @Autowired
-    MaverikMovieService movieService;
+    private MaverikMovieService movieService;
+    @Autowired
+    private MovieRepository movieRepository;
 
-    @GetMapping("/movie")
+    @GetMapping("/movies")
     public ResponseEntity<TestProblemResponse<MaverikMovie>> fetchMovie(@RequestParam(value = "title") String title) {
         try {
             MaverikMovie[] movies = movieService.searchMovies(title);
@@ -32,8 +36,8 @@ public class MovieController {
                         HttpStatus.NOT_FOUND);
             }
 
-            MaverikMovie movie = movieService.getMovie(movies[0].imdbID());
-            if (movie == null) {
+            MaverikMovie mavMovie = movieService.getMovie(movies[0].imdbID());
+            if (mavMovie == null) {
                 return new ResponseEntity<>(
                         new TestProblemResponse<MaverikMovie>(
                                 false,
@@ -42,6 +46,9 @@ public class MovieController {
                                 null),
                         HttpStatus.NOT_FOUND);
             }
+
+            Movie movie = new Movie(mavMovie);
+            movieRepository.save(movie);
 
             return new ResponseEntity<>(
                     new TestProblemResponse<MaverikMovie>(
