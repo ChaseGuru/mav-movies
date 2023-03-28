@@ -1,0 +1,15 @@
+version: '3'
+
+services:
+  db:
+    image: postgres
+
+    restart: unless-stopped
+
+    environment:
+      POSTGRES_DB: testdb
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+
+    ports:
+      - "${HOST_DB_BINDING:-5488}:5432"

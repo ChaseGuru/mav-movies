@@ -42,4 +42,6 @@ public class MovieRequestTest {
         Movie movie = response.data();
         assertThat(movie.title()).contains("John Wick");
     }
+
+    // TODO: Test other response types of method
 }
