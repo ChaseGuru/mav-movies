@@ -1,4 +1,4 @@
-package com.maverik.testproblem.Testproblem;
+package com.maverik.Testproblem;
 
 import java.net.URI;
 
@@ -11,19 +11,20 @@ import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import com.maverik.testproblem.Testproblem.models.Movie;
-import com.maverik.testproblem.Testproblem.models.TestProblemResponse;
+import com.maverik.Testproblem.models.ErrorCode;
+import com.maverik.Testproblem.models.Movie;
+import com.maverik.Testproblem.models.TestProblemResponse;
 
 @SpringBootApplication
 @RestController
-public class TestproblemApplication {
+public class TestProblemApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(TestproblemApplication.class, args);
+		SpringApplication.run(TestProblemApplication.class, args);
 	}
 
 	@GetMapping("/fetch-movie")
-	public String fetchMovie(@RequestParam(value = "title") String title) {
+	public TestProblemResponse fetchMovie(@RequestParam(value = "title") String title) {
 		String url = "https://gateway.maverik.com/movie/api/movie/title/";
 
 		URI uri = UriComponentsBuilder.fromUriString(url)
@@ -43,7 +44,7 @@ public class TestproblemApplication {
 					true,
 					null,
 					null,
-					movies).toString();
+					movies);
 			// }
 
 		} catch (RestClientException e) {
@@ -52,8 +53,8 @@ public class TestproblemApplication {
 			return new TestProblemResponse(
 					false,
 					"Failed to fetch movie",
-					TestProblemResponse.ErrorCode.MAVERIK_REQUEST_FAILED,
-					null).toString();
+					ErrorCode.MAVERIK_REQUEST_FAILED,
+					null);
 		}
 	}
 
