@@ -13,7 +13,7 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.MediaType;
 import org.springframework.http.RequestEntity;
 
-import com.maverik.Testproblem.models.MaverikMovie;
+import com.maverik.Testproblem.models.Movie;
 import com.maverik.Testproblem.models.TestProblemResponse;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
@@ -27,20 +27,30 @@ public class MovieRequestTest {
     @Test
     public void movieFetchAndSaveShouldReturnFoundMovie() throws Exception {
         // TODO: put maverik movie requests in service so that we can "mock" responses
-        ParameterizedTypeReference<TestProblemResponse<MaverikMovie>> responseType = new ParameterizedTypeReference<>() {
+        ParameterizedTypeReference<TestProblemResponse<Movie>> responseType = new ParameterizedTypeReference<>() {
         };
         RequestEntity<Void> request = RequestEntity.get("http://localhost:" + port + "/movies?title=John")
                 .accept(MediaType.APPLICATION_JSON).build();
 
-        TestProblemResponse<MaverikMovie> response = restTemplate.exchange(request, responseType)
+        TestProblemResponse<Movie> response = restTemplate.exchange(request, responseType)
                 .getBody();
 
         assertNotNull(response);
         assertThat(response.success());
         assertNotNull(response.data());
 
-        MaverikMovie movie = response.data();
-        assertThat(movie.title()).contains("John Wick");
+        Movie movie = response.data();
+        assertThat(movie.getTitle()).contains("John Wick");
+
+        request = RequestEntity.get("http://localhost:" + port + "/movies/tt2911666")
+                .accept(MediaType.APPLICATION_JSON).build();
+
+        response = restTemplate.exchange(request, responseType)
+                .getBody();
+
+        assertNotNull(response);
+        assertThat(response.success());
+        assertNotNull(response.data());
     }
 
     // TODO: Test other response types of method
